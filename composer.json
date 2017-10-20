@@ -1,0 +1,27 @@
+{
+    "name": "boneq/laravel-onenet",
+    "description": "laravel onenet extension",
+    "keywords": ["onenet", "iot","laravel", "sdk"],
+    "authors": [
+        {
+            "name": "boneq",
+            "email": "495889971@qq.com"
+        }
+    ],
+    "require": {},
+    "autoload":{
+        "psr-4":{
+            "Boneq\\OneNet\\":"src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Boneq\\OneNet\\OneNetServiceProvider"
+            ],
+            "aliases": {
+                "OneNet": "Boneq\\OneNet\\Facades\\OneNet"
+            }
+        }
+    }
+}
