@@ -6,6 +6,7 @@
  * Time: 16:37
  */
 namespace Boneq\OneNet;
+use GuzzleHttp\Client;
 
 class OneNet
 {
@@ -17,6 +18,11 @@ class OneNet
     static $input;
     // cache
     static $cache;
+
+    // api-key
+    static $apikey=null;
+    // base_uri
+    static $base_uri='http://api.heclouds.com';
 
     /**
      * Verify Token and EncodingAESKey
@@ -107,8 +113,68 @@ class OneNet
         if (self::$token==null) {
             self::$token=$config['config']['onenet.token'];
             self::$encodekey=$config['config']['onenet.encodekey'];
+            self::$apikey=$config['config']['onenet.apikey'];
         }
         self::$input=$config['request']->all();
         self::$cache=$config['cache'];
+    }
+
+    /**
+     * add a terminal
+     *
+     * @param $title
+     * @param string $protocol
+     * @return array
+     */
+    public static function add($title,$protocol='HTTP')
+    {
+        $client=new Client(['base_uri' => self::$base_uri]);
+        $response=$client->request('POST','/devices',[
+            'headers'=>[
+                'api-key'=>self::$apikey,
+                'Content-Type'=>'application/json'
+            ],
+            'json'=>[
+                'title'=>$title,
+                'protocol'=>$protocol,
+            ]
+        ]);
+        $res=$response->getBody();
+        if ($res['errno']==0) {
+            return [
+                'state'=>true,
+                'device_id'=>$res['data']['device_id']
+            ];
+        }else{
+            return ['state'=>false];
+        }
+    }
+
+    public static function edit($device_id,$title=null,$protocol=null)
+    {
+        $data=null;
+        if (isset($title)) {
+            $data['title']=$title;
+        }
+        if (isset($title)) {
+            $data['protocol']=$protocol;
+        }
+        if (!isset($data)) {
+            return ['state'=>false];
+        }
+        $client=new Client(['base_uri' => self::$base_uri]);
+        $response=$client->request('POST','/devices/'.$device_id,[
+            'headers'=>[
+                'api-key'=>self::$apikey,
+                'Content-Type'=>'application/json'
+            ],
+            'json'=>$data
+        ]);
+        $res=$response->getBody();
+        if ($res['errno']==0) {
+            return ['state'=>true];
+        }else{
+            return ['state'=>false];
+        }
     }
 }
