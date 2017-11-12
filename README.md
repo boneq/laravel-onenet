@@ -13,7 +13,7 @@ onenet for Laravel是用于OneNet平台数据接收的一个laravel库
 > 使用前请先阅读OneNet开发文档
 
   ```shell
-  composer require "boneq/laravel-onenet:1.0.0"
+  composer require "boneq/laravel-onenet:1.1.0"
   ```
  
 ## 配置
