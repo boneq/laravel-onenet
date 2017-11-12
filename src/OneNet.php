@@ -23,6 +23,8 @@ class OneNet
     static $apikey=null;
     // base_uri
     static $base_uri='http://api.heclouds.com';
+    // client
+    static $client=null;
 
     /**
      * Verify Token and EncodingAESKey
@@ -128,8 +130,8 @@ class OneNet
      */
     public static function add($title,$protocol='HTTP')
     {
-        $client=new Client(['base_uri' => self::$base_uri]);
-        $response=$client->request('POST','/devices',[
+        $client= self::getclient();
+        $response=$client->post('/devices',[
             'headers'=>[
                 'api-key'=>self::$apikey,
                 'Content-Type'=>'application/json'
@@ -139,7 +141,7 @@ class OneNet
                 'protocol'=>$protocol,
             ]
         ]);
-        $res=$response->getBody();
+        $res=json_decode($response->getBody(),true);
         if ($res['errno']==0) {
             return [
                 'state'=>true,
@@ -150,6 +152,14 @@ class OneNet
         }
     }
 
+    /**
+     * edit a terminal
+     *
+     * @param $device_id
+     * @param null $title
+     * @param null $protocol
+     * @return array
+     */
     public static function edit($device_id,$title=null,$protocol=null)
     {
         $data=null;
@@ -162,19 +172,85 @@ class OneNet
         if (!isset($data)) {
             return ['state'=>false];
         }
-        $client=new Client(['base_uri' => self::$base_uri]);
-        $response=$client->request('POST','/devices/'.$device_id,[
+        $client= self::getclient();
+        $response=$client->post('/devices/'.$device_id,[
             'headers'=>[
                 'api-key'=>self::$apikey,
                 'Content-Type'=>'application/json'
             ],
             'json'=>$data
         ]);
-        $res=$response->getBody();
+        $res=json_decode($response->getBody(),true);
         if ($res['errno']==0) {
             return ['state'=>true];
         }else{
             return ['state'=>false];
         }
+    }
+
+    /**
+     * delete a terminal
+     *
+     * @param $device_id
+     * @return array
+     */
+    public function delete($device_id)
+    {
+        $client= self::getclient();
+        $response=$client->delete('/devices/'.$device_id,[
+            'headers'=>[
+                'api-key'=>self::$apikey,
+                'Content-Type'=>'application/json'
+            ]
+        ]);
+        $res=json_decode($response->getBody(),true);
+        if ($res['errno']==0) {
+            return ['state'=>true];
+        }else{
+            return ['state'=>false];
+        }
+    }
+
+    /**
+     * send a message to onenet
+     *
+     * @param $device_id
+     * @param $data
+     * @return array
+     */
+    public static function send($device_id,$data)
+    {
+        $client= self::getclient();
+        $response=$client->post('/cmds',[
+            'query'=>[
+                'device_id'=>$device_id
+            ],
+            'headers'=>[
+                'api-key'=>self::$apikey,
+                'Content-Type'=>'application/json'
+            ],
+            'json'=>$data
+        ]);
+        $res=json_decode($response->getBody(),true);
+        if ($res['errno']==0) {
+            return ['state'=>true,'cmd_uuid'=>$res['data']['cmd_uuid']];
+        }else{
+            return ['state'=>false];
+        }
+    }
+
+    /**
+     * get curl client
+     *
+     * @return Client|null
+     */
+    static function getclient()
+    {
+        if (self::$client==null) {
+            $client=self::$client=new Client(['base_uri' => self::$base_uri]);
+        }else{
+            $client=self::$client;
+        }
+        return $client;
     }
 }

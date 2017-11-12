@@ -9,6 +9,8 @@
         }
     ],
     "require": {
+        "php": ">=7.0",
+        "guzzlehttp/guzzle": "^6.3",
         "boneq/laravel-onenet": "1.0.0"
     },
     "autoload":{

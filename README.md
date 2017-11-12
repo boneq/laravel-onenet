@@ -48,7 +48,7 @@ onenet for Laravel是用于OneNet平台数据接收的一个laravel库
   'OneNet'=>Boneq\OneNet\Facades\OneNet::class,
   ```
 
-## 使用
+## 从接收平台数据
 
 ### Laravel csrf问题
 
@@ -91,9 +91,90 @@ class OneNetController extends Controller
 }
 ```
 
+## 发送数据到平台
+### 添加终端
+```php
+use OneNet;
+
+public function addTerminal()
+{
+    // name 是设备名称，MQTT是设备协议
+    return OneNet::add('name','MQTT');
+}
+```
+返回数据
+
+```json
+{
+    "state":true,
+    "device_id":"1000000"
+}
+```
+> 注释：添加成功返回true和设备id，失败反回false
+
+### 编辑终端
+```php
+use OneNet;
+
+public function editTerminal()
+{
+    // ter_id是设备id,name 是设备名称，MQTT是设备协议
+    return OneNet::edit('ter_id','name','MQTT');
+}
+```
+返回数据
+
+```json
+{
+    "state":true
+}
+```
+> 注释：编辑成功返回true，失败反回false
+
+### 删除终端
+```php
+use OneNet;
+
+public function deleteTerminal()
+{
+    // ter_id是设备id
+    return OneNet::delect('ter_id');
+}
+```
+返回数据
+
+```json
+{
+    "state":true
+}
+```
+> 注释：删除成功返回true，失败反回false
+
+### 向终端发送命令
+```php
+use OneNet;
+
+public function sendMessage()
+{
+    // ter_id是设备id,$data是json数据
+    $data=['msgtype'=>'text','text'=>'4444'];
+    return OneNet::send('ter_id',$data);
+}
+```
+返回数据
+
+```json
+{
+    "state":true,
+    "cmd_uuid":"111111111"
+}
+```
+> 注释：发送成功返回true，和数据的cmd_uuid,失败返回false
+
+
 ## 升级规划
 
-会逐步加入请求操作相关的方法
+会逐步优化请求操作相关的方法
 
 ## License
 
