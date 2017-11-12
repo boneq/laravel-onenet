@@ -35,11 +35,13 @@ onenet for Laravel是用于OneNet平台数据接收的一个laravel库
   ```php
   'token'=>env('OneNet_Token','令牌'),
   'encodekey'=>env('OneNet_EncodingAESKey', '消息加解密秘钥'),
+  'apikey'=>env('OneNet_APIKey','设备操作中的密钥')
   ```
 3.2 (可选3.1)或者在.env文件中写入下面内容
   ```.env
   OneNet_Token=令牌
   OneNet_EncodingAESKey=消息加解密秘钥
+  OneNet_APIKey=设备操作中的密钥
   ```
 
 4. 添加外观到 `config/app.php` 中的 `aliases` 部分(laravel5.5+不用手动添加)
